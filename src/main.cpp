@@ -9,7 +9,7 @@ char retByte = 0;
 class M5_FS90 {
   Servo servo;
   int pin;
-  int target = 0;
+  int target = 90;
 
 public:
   void init(int att_pin) {
