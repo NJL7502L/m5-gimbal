@@ -4,6 +4,7 @@
 #include <M5Stack.h>
 
 BluetoothSerial serialBT;
+char retByte = 0;
 
 class M5_FS90 {
   Servo servo;
@@ -38,8 +39,6 @@ public:
 
 } yaw, pit;
 
-uint8_t retByte = 0;
-
 void setup() {
   serialBT.begin("ESP32test");
   Serial.begin(115200);
@@ -55,24 +54,24 @@ void setup() {
 void loop() {
   if (serialBT.available() > 0) { // 受信したデータが存在する
     retByte = serialBT.read();    // 受信データを読み込む
-    if (bitRead(retByte, 0) || retByte == '0') {
+    if (retByte == 'a') {
       yaw.up();
 
       serialBT.print("yaw++");
       serialBT.print("\t");
     }
-    if (bitRead(retByte, 1) || retByte == '1') {
+    if (retByte == 'b') {
       yaw.down();
 
       serialBT.print("yaw--");
       serialBT.print("\t");
     }
-    if (bitRead(retByte, 2) || retByte == '2') {
+    if (retByte == 'q') {
       pit.up();
       serialBT.print("pit++");
       serialBT.print("\t");
     }
-    if (bitRead(retByte, 3) || retByte == '3') {
+    if (retByte == 'w') {
       pit.down();
 
       serialBT.print("pit--");
