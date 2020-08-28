@@ -1,0 +1,3 @@
+[submodule "lib/M5Stack"]
+	path = lib/M5Stack
+	url = git@github.com:m5stack/M5Stack.git
