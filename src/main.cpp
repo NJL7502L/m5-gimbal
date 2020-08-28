@@ -1,58 +1,85 @@
+#include "BluetoothSerial.h"
+#include "ESP32_Servo.h"
 #include <Arduino.h>
 #include <M5Stack.h>
 
+BluetoothSerial serialBT;
+
+class M5_FS90 {
+  Servo servo;
+  int pin;
+  int target = 0;
+
+public:
+  void init(int att_pin) {
+    pin = att_pin;
+    servo.attach(pin, 500, 2400);
+  };
+  void write() {
+    target = constrain(target, 0, 180);
+    servo.write(target);
+  };
+  void up(void) {
+    target += 10;
+    target = constrain(target, 0, 180);
+  };
+  void up(int val) {
+    target += val;
+    target = constrain(target, 0, 180);
+  };
+  void down(void) {
+    target -= 10;
+    target = constrain(target, 0, 180);
+  };
+  void down(int val) {
+    target -= val;
+    target = constrain(target, 0, 180);
+  };
+
+} yaw, pit;
+
+uint8_t retByte = 0;
+
 void setup() {
-  // initialize the M5Stack object
+  serialBT.begin("ESP32test");
+  Serial.begin(115200);
+  Serial.println("Booting");
+  yaw.init(22);
+  pit.init(19);
+
   M5.begin();
-
-  /*
-    Power chip connected to gpio21, gpio22, I2C device
-    Set battery charging voltage and current
-    If used battery, please call this function in your project
-  */
-  M5.Power.begin();
-
-  // Lcd display
-  M5.Lcd.fillScreen(WHITE);
-  delay(500);
-  M5.Lcd.fillScreen(RED);
-  delay(500);
-  M5.Lcd.fillScreen(GREEN);
-  delay(500);
-  M5.Lcd.fillScreen(BLUE);
-  delay(500);
-  M5.Lcd.fillScreen(BLACK);
-  delay(500);
-
-  // text print
-  M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.setCursor(10, 10);
-  M5.Lcd.setTextColor(WHITE);
-  M5.Lcd.setTextSize(1);
-  M5.Lcd.printf("Display Test!");
-
-  // draw graphic
-  delay(1000);
-  M5.Lcd.drawRect(100, 100, 50, 50, BLUE);
-  delay(1000);
-  M5.Lcd.fillRect(100, 100, 50, 50, BLUE);
-  delay(1000);
-  M5.Lcd.drawCircle(100, 100, 50, RED);
-  delay(1000);
-  M5.Lcd.fillCircle(100, 100, 50, RED);
-  delay(1000);
-  M5.Lcd.drawTriangle(30, 30, 180, 100, 80, 150, YELLOW);
-  delay(1000);
-  M5.Lcd.fillTriangle(30, 30, 180, 100, 80, 150, YELLOW);
+  M5.Lcd.setTextSize(2);
+  M5.Lcd.print("Start.");
 }
 
 void loop() {
+  if (serialBT.available() > 0) { // 受信したデータが存在する
+    retByte = serialBT.read();    // 受信データを読み込む
+    if (bitRead(retByte, 0) || retByte == '0') {
+      yaw.up();
 
-  // rand draw
-  M5.Lcd.fillTriangle(random(M5.Lcd.width() - 1), random(M5.Lcd.height() - 1),
-                      random(M5.Lcd.width() - 1), random(M5.Lcd.height() - 1),
-                      random(M5.Lcd.width() - 1), random(M5.Lcd.height() - 1),
-                      random(0xfffe));
+      serialBT.print("yaw++");
+      serialBT.print("\t");
+    }
+    if (bitRead(retByte, 1) || retByte == '1') {
+      yaw.down();
 
-  M5.update();
+      serialBT.print("yaw--");
+      serialBT.print("\t");
+    }
+    if (bitRead(retByte, 2) || retByte == '2') {
+      pit.up();
+      serialBT.print("pit++");
+      serialBT.print("\t");
+    }
+    if (bitRead(retByte, 3) || retByte == '3') {
+      pit.down();
+
+      serialBT.print("pit--");
+      serialBT.print("\t");
+    }
+    serialBT.println(BIN, retByte);
+  }
+  yaw.write();
+  pit.write();
 }

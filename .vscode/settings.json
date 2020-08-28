@@ -1,0 +1,9 @@
+{
+  "files.associations": {
+    "*.jb": "ruby",
+    "ios": "cpp",
+    "locale": "cpp",
+    "ostream": "cpp",
+    "cstddef": "cpp"
+  }
+}
