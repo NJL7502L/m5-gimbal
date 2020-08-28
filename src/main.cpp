@@ -20,22 +20,8 @@ public:
     target = constrain(target, 0, 180);
     servo.write(target);
   };
-  void up(void) {
-    target += 10;
-    target = constrain(target, 0, 180);
-  };
-  void up(int val) {
-    target += val;
-    target = constrain(target, 0, 180);
-  };
-  void down(void) {
-    target -= 10;
-    target = constrain(target, 0, 180);
-  };
-  void down(int val) {
-    target -= val;
-    target = constrain(target, 0, 180);
-  };
+  void up(void) { target += 10; };
+  void down(void) { target -= 10; };
 
 } yaw, pit;
 
