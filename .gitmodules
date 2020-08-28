@@ -1,3 +1,0 @@
-[submodule "lib/ESP32Servo"]
-	path = lib/ESP32Servo
-	url = git@github.com:jkb-git/ESP32Servo.git
